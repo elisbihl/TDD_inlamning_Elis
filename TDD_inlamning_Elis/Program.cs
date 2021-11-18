@@ -8,6 +8,7 @@ namespace TDD_inlamning_Elis
         {
             Console.WriteLine("Hello World!");
             var socialmedia = new SocialMedia();
+            socialmedia.RunSocialMedia();
         }
     }
 }
