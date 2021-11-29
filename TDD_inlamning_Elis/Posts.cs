@@ -19,10 +19,5 @@ namespace TDD_inlamning_Elis
             TimeOfPost = timeOfPost;
             UserName = username;
         }
-
-        internal string ToList()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

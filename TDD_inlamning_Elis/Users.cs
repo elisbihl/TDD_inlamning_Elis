@@ -11,7 +11,7 @@ namespace TDD_inlamning_Elis
     {
         public string UserName { get; set; }
 
-        public List<string> ListOfMessages = new List<string>();
+        public List<Messages> ListOfMessages = new List<Messages>();
 
         public List<Posts> ListOfPosts = new List<Posts>();
 
@@ -22,7 +22,7 @@ namespace TDD_inlamning_Elis
             UserName = username;
         }
 
-        public void AddMessage(string message)
+        public void AddMessage(Messages message)
         {
             ListOfMessages.Add(message);
         }
@@ -40,9 +40,21 @@ namespace TDD_inlamning_Elis
 
         public void ViewMessage()
         {
-            foreach(var message in ListOfMessages)
+            foreach (var message in ListOfMessages)
             {
-                Console.WriteLine(message);
+                Console.WriteLine();
+            }
+        }
+
+        public void ViewPosts()
+        {
+
+            foreach (var item in ListOfPosts)
+            {
+                if (item.UserName == UserName)
+                {
+                    Console.WriteLine(item.TimeOfPost.ToString("HH:mm") + " " + item.UserName + ": " + item.PostMessage + "\n");
+                }
             }
         }
     }
