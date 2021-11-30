@@ -32,30 +32,9 @@ namespace TDD_inlamning_Elis
             ListOfFollowers.Add(newFollower);
         }
 
-
         public void AddPost(Posts post)
         {
             ListOfPosts.Add(post);
-        }
-
-        public void ViewMessage()
-        {
-            foreach (var message in ListOfMessages)
-            {
-                Console.WriteLine();
-            }
-        }
-
-        public void ViewPosts()
-        {
-
-            foreach (var item in ListOfPosts)
-            {
-                if (item.UserName == UserName)
-                {
-                    Console.WriteLine(item.TimeOfPost.ToString("HH:mm") + " " + item.UserName + ": " + item.PostMessage + "\n");
-                }
-            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -33,10 +34,13 @@ namespace TDD_inlamning_Elis
                 Help();
                 RawInput = Console.ReadLine();
                 SplitInput = SplitString(RawInput);
-                CurrentUser = CheckIfUserExists(SplitInput[0]);
-                if(SplitInput.Length > 2)
+                if (SplitInput.Length > 1)
                 {
-                    CheckForTargetUser(SplitInput[2]);
+                    CurrentUser = CheckIfUserExists(SplitInput[0]);
+                    if (SplitInput.Length > 2)
+                    {
+                        CheckForTargetUser(SplitInput[2]);
+                    }
 
                     switch (SplitInput[1].ToLower())
                     {
@@ -44,25 +48,28 @@ namespace TDD_inlamning_Elis
                             Console.WriteLine(Post(FormatedInput));
                             break;
                         case "/timeline":
-                            Timeline(TargetUser.ListOfPosts).ForEach(a => Console.Write(a.TimeOfPost.ToString("yy-MM-dd-HH-mm") + " " + a.UserName + ": " + a.PostMessage));
+                            Timeline(TargetUser.ListOfPosts).ForEach(a =>
+                                Console.WriteLine(a.TimeOfPost.ToString("yy-MM-dd-HH-mm") + " " + a.UserName + ": " + a.PostMessage));
                             break;
                         case "/follow":
                             Console.WriteLine(Follow());
                             break;
                         case "/wall":
-                            Wall(CurrentUser.ListOfFollowers).ForEach(a => Console.WriteLine(a.TimeOfPost.ToString("yy-MM-dd-HH-mm") + " " + a.UserName + ": " + a.PostMessage));
+                            Wall(CurrentUser.ListOfFollowers).ForEach(a =>
+                                Console.WriteLine(a.TimeOfPost.ToString("yy-MM-dd-HH-mm") + " " + a.UserName + ": " + a.PostMessage));
                             break;
                         case "/send_message":
                             Console.WriteLine(SendMessage(RawInput));
                             break;
                         case "/read_message":
-                            ReadMessage(CurrentUser.ListOfMessages).ForEach(a => Console.WriteLine(a.TimeOfMessage.ToString("yy-MM-dd-HH-mm") + " " + a.UserName + ": " + a.Message));
+                            ReadMessage(CurrentUser.ListOfMessages).ForEach(a =>
+                                Console.WriteLine(a.TimeOfMessage.ToString("yy-MM-dd-HH-mm") + " " + a.UserName + ": " + a.Message));
                             break;
                         case "/exit":
                             exit = false;
                             break;
                         default:
-                            Console.WriteLine("IIII, Couldn't understand you! Try again....");
+                            Console.WriteLine("IIII, Wrong input! Try again....");
                             break;
                     }
                 }
@@ -80,9 +87,9 @@ namespace TDD_inlamning_Elis
             }
             else
             {
-                TargetUser.AddPost(new Posts(message,DateTime.Now, TargetUser.UserName));
+                TargetUser.AddPost(new Posts(message, DateTime.Now, TargetUser.UserName));
             }
-            return message;
+            return CurrentUser.UserName + ": " + message;
         }
 
         public List<Posts> Timeline(List<Posts> targetsPosts)
@@ -97,29 +104,32 @@ namespace TDD_inlamning_Elis
 
         public string Follow()
         {
-            CurrentUser.AddFollower(TargetUser);
-            return "You are now following " + TargetUser.UserName;
+            if (TargetUser != null)
+            {
+                CurrentUser.AddFollower(TargetUser);
+                return CurrentUser.UserName + " is now following " + TargetUser.UserName;
+            }
+
+            return "User doesn't exist";
         }
 
         public List<Posts> Wall(List<User> followers)
         {
             List<Posts> sortedList = new List<Posts>();
-            followers.ForEach(x => sortedList = x.ListOfPosts.Where(r => r.UserName == x.UserName && CurrentUser.UserName == r.UserName).ToList());
-            CurrentUser.ListOfPosts.ForEach(a => sortedList.Add(a));
-            foreach (var item in CurrentUser.ListOfPosts)
-            {
-                if (!sortedList.Contains(item))
-                {
-                    sortedList.Add(item);
-                }
-            }
+            followers.ForEach(r => sortedList.AddRange(r.ListOfPosts.Where(x => x.UserName == r.UserName)));
+            CurrentUser.ListOfPosts.ForEach(x => sortedList.Add(x));
             return sortedList.OrderByDescending(a => a.TimeOfPost).ToList();
         }
 
         public string SendMessage(string message)
         {
-            TargetUser.ListOfMessages.Add(new Messages(message, DateTime.Now, TargetUser.UserName));
-            return "You have sent " + TargetUser.UserName + " a message!";
+            if (TargetUser != null)
+            {
+                TargetUser.AddMessage(new Messages(message, DateTime.Now, TargetUser.UserName));
+                return "You have sent " + TargetUser.UserName + " a message!";
+            }
+
+            return "User doesn't exist";
         }
 
         public List<Messages> ReadMessage(List<Messages> userMessages)
@@ -129,18 +139,13 @@ namespace TDD_inlamning_Elis
 
         public bool CheckForTargetUser(string input)
         {
-            for (int i = 0; i < input.Length; i++)
-            {
-                if (input[i] == '@')
-                {
-                    input = input.TrimStart('@');
-                }
-            }
+            input = input.TrimStart('@');
+
             foreach (var item in ListOfUsers)
             {
                 if (item.UserName == input)
                 {
-                    TargetUser = ListOfUsers.First(r => r.UserName == item.UserName);
+                    TargetUser = ListOfUsers.FirstOrDefault(r => r.UserName == item.UserName);
                     return true;
                 }
             }
@@ -160,14 +165,14 @@ namespace TDD_inlamning_Elis
 
         public string[] SplitString(string input)
         {
-            FormatedInput = " ";
+            FormatedInput = null;
             SplitInput = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            for (int i = 1; i < SplitInput.Length; i++)
+            for (int i = 2; i < SplitInput.Length; i++)
             {
                 FormatedInput += SplitInput[i] + " ";
-            }
 
+            }
             return SplitInput;
         }
 
