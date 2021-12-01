@@ -31,7 +31,14 @@ namespace TDD_inlamning_Elis
                 TargetUser = null;
                 CurrentUser = null;
                 Console.WriteLine("Welcome to ConsoleMedia!");
-                Help();
+                Console.WriteLine("Lost? Here are all the different commands you can run. \n " +
+                                  "/post - To post a comment on your own or write @username to write on some other person wall \n" +
+                                  "/timeline - And a name to see someones timeline \n" +
+                                  "/wall - To see a list of the people following you \n" +
+                                  "/follow - And a name to follow someone \n" +
+                                  "/send_message - To send someone a message and use @ to select who. \n" +
+                                  "/read_message - To read your incoming messages \n");
+
                 RawInput = Console.ReadLine();
                 SplitInput = SplitString(RawInput);
                 if (SplitInput.Length > 1)
@@ -52,7 +59,10 @@ namespace TDD_inlamning_Elis
                                 Console.WriteLine(a.TimeOfPost.ToString("yy-MM-dd-HH-mm") + " " + a.UserName + ": " + a.PostMessage));
                             break;
                         case "/follow":
-                            Console.WriteLine(Follow());
+                            if (TargetUser != null)
+                                Follow(TargetUser).ForEach(r => Console.WriteLine(r.UserName));
+                            else
+                                Console.WriteLine("User doesn't exist");
                             break;
                         case "/wall":
                             Wall(CurrentUser.ListOfFollowers).ForEach(a =>
@@ -96,21 +106,19 @@ namespace TDD_inlamning_Elis
         {
             if (!CurrentUser.ListOfFollowers.Contains(TargetUser))
             {
-                Console.WriteLine("You must follow" + TargetUser.UserName + " to see posts");
+                Console.WriteLine("You must follow " + TargetUser.UserName + " to see posts");
                 return new List<Posts>();
             }
+
+
             return targetsPosts.OrderByDescending(s => s.TimeOfPost).ToList();
         }
 
-        public string Follow()
+        public List<User> Follow(User followUser)
         {
-            if (TargetUser != null)
-            {
-                CurrentUser.AddFollower(TargetUser);
-                return CurrentUser.UserName + " is now following " + TargetUser.UserName;
-            }
-
-            return "User doesn't exist";
+            Console.WriteLine("These are the people you are following: ");
+            CurrentUser.AddFollower(TargetUser);
+            return CurrentUser.ListOfFollowers.OrderBy(user => user.UserName).ToList();
         }
 
         public List<Posts> Wall(List<User> followers)
@@ -128,7 +136,6 @@ namespace TDD_inlamning_Elis
                 TargetUser.AddMessage(new Messages(message, DateTime.Now, TargetUser.UserName));
                 return "You have sent " + TargetUser.UserName + " a message!";
             }
-
             return "User doesn't exist";
         }
 
@@ -150,17 +157,6 @@ namespace TDD_inlamning_Elis
                 }
             }
             return false;
-        }
-
-        public void Help()
-        {
-            Console.WriteLine("Lost? Here are all the different commands you can run. \n " +
-                "/post - To post a comment on your own or write @username to write on some other person wall \n" +
-                "/timeline - And a name to see someones timeline \n" +
-                "/wall - To see a list of the people following you \n" +
-                "/follow - And a name to follow someone \n" +
-                "/send_message - To send someone a message and use @ to select who. \n" +
-                "/read_message - To read your incoming messages \n");
         }
 
         public string[] SplitString(string input)
