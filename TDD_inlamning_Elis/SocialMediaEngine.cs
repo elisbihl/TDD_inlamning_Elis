@@ -55,8 +55,11 @@ namespace TDD_inlamning_Elis
                             Console.WriteLine(Post(FormatedInput));
                             break;
                         case "/timeline":
-                            Timeline(TargetUser.ListOfPosts).ForEach(a =>
+                            if(TargetUser != null)
+                                Timeline(TargetUser.ListOfPosts).ForEach(a =>
                                 Console.WriteLine(a.TimeOfPost.ToString("yy-MM-dd-HH-mm") + " " + a.UserName + ": " + a.PostMessage));
+                            else
+                                Console.WriteLine("User doesn't exist");
                             break;
                         case "/follow":
                             if (TargetUser != null)
@@ -109,8 +112,6 @@ namespace TDD_inlamning_Elis
                 Console.WriteLine("You must follow " + TargetUser.UserName + " to see posts");
                 return new List<Posts>();
             }
-
-
             return targetsPosts.OrderByDescending(s => s.TimeOfPost).ToList();
         }
 

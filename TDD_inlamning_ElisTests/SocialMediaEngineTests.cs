@@ -115,8 +115,8 @@ namespace TDD_inlamning_Elis.Tests
         public void ReadMessageTest()
         {
 
-            Messages testMessage1 = new Messages("Hello bitch", new DateTime(2015, 01, 01), "Råbert");
-            Messages testMessage2 = new Messages("Hello bitch", new DateTime(2015, 02, 01), "Jansch");
+            Messages testMessage1 = new Messages("Hello bitch", new DateTime(2015, 01, 01), "Robert");
+            Messages testMessage2 = new Messages("Hello bitch", new DateTime(2015, 02, 01), "Mange");
             SocialMedia.CurrentUser.AddMessage(testMessage1);
             SocialMedia.CurrentUser.AddMessage(testMessage2);
             Assert.AreEqual(SocialMedia.ReadMessage(SocialMedia.CurrentUser.ListOfMessages)[0],
